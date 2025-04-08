@@ -1,23 +1,16 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
-import UnicornsContainer from "./unicorns";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Ruta principal de unicornios */}
-        <Route path="/unicornios" element={<UnicornsContainer />} />
-
-        {/* Ruta raíz redirige a /unicornios */}
-        <Route path="*" element={<Navigate to="/unicornios" replace />} />
-      </Routes>
-    </Router>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4"> Bienvenido</h1>
+      <Link to="/unicornios" className="p-button p-button-primary">
+        Ir a la gestión de Unicornios
+      </Link>
+    </div>
   );
-}
+};
 
 export default App;
+
