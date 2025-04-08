@@ -1,69 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import UnicornsView from './UnicornsView';
+
+const API_URL = 'https://crudcrud.com/api/e816652102f04786a5bcdb02e4f0e4c5/unicorns';
 
 const UnicornsContainer = () => {
   const [unicorns, setUnicorns] = useState([]);
-  const [selectedUnicorn, setSelectedUnicorn] = useState(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    age: '',
+    colour: '',
+    power: '', // 🆕 Agregado el campo poder
+  });
+  const [editingUnicorn, setEditingUnicorn] = useState(null);
 
-  const API_URL = 'https://crudcrud.com/api/afb22a452a8a4a2a2a2cadda52e4d78a6/unicorns '; // API
+  // GET - Leer unicornios
+  const fetchUnicorns = async () => {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      setUnicorns(data);
+    } catch (err) {
+      console.error('Error al obtener unicornios:', err);
+    }
+  };
 
   useEffect(() => {
-    getUnicorns();
+    fetchUnicorns();
   }, []);
 
-  const getUnicorns = async () => {
-    const res = await fetch(API_URL);
-    const data = await res.json();
-    setUnicorns(data);
+  // POST - Crear
+  const handleCreate = async () => {
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        setFormData({ name: '', age: '', colour: '', power: '' });
+        fetchUnicorns();
+      }
+    } catch (err) {
+      console.error('Error al crear unicornio:', err);
+    }
   };
 
-  const handleCreate = async (newUnicorn) => {
-    await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newUnicorn),
-    });
-    getUnicorns();
+  // PUT - Actualizar
+  const handleUpdate = async () => {
+    if (!editingUnicorn) return;
+    try {
+      await fetch(`${API_URL}/${editingUnicorn._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.name,
+          age: formData.age,
+          colour: formData.colour,
+          power: formData.power,
+        }),
+      });
+      setEditingUnicorn(null);
+      setFormData({ name: '', age: '', colour: '', power: '' });
+      fetchUnicorns();
+    } catch (err) {
+      console.error('Error al actualizar unicornio:', err);
+    }
   };
 
-  const handleUpdate = async (updatedUnicorn) => {
-    await fetch(`${API_URL}/${updatedUnicorn.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedUnicorn),
-    });
-    getUnicorns();
-    setSelectedUnicorn(null);
-  };
-
+  // DELETE - Eliminar
   const handleDelete = async (id) => {
-    await fetch(`${API_URL}/${id}`, {
-      method: 'DELETE',
+    try {
+      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+      fetchUnicorns();
+    } catch (err) {
+      console.error('Error al eliminar unicornio:', err);
+    }
+  };
+
+  // Iniciar edición
+  const startEdit = (unicorn) => {
+    setEditingUnicorn(unicorn);
+    setFormData({
+      name: unicorn.name || '',
+      age: unicorn.age || '',
+      colour: unicorn.colour || '',
+      power: unicorn.power || '', // 🆕 Cargar poder también
     });
-    getUnicorns();
-  };
-
-  const openEditDialog = (unicorn) => {
-    setSelectedUnicorn(unicorn);
-    setIsDialogOpen(true);
-  };
-
-  const closeDialog = () => {
-    setSelectedUnicorn(null);
-    setIsDialogOpen(false);
   };
 
   return (
     <UnicornsView
       unicorns={unicorns}
-      onCreate={handleCreate}
-      onUpdate={handleUpdate}
-      onDelete={handleDelete}
-      selectedUnicorn={selectedUnicorn}
-      openEditDialog={openEditDialog}
-      isDialogOpen={isDialogOpen}
-      closeDialog={closeDialog}
+      formData={formData}
+      setFormData={setFormData}
+      handleCreate={handleCreate}
+      handleUpdate={handleUpdate}
+      handleDelete={handleDelete}
+      editingUnicorn={editingUnicorn}
+      startEdit={startEdit}
     />
   );
 };
