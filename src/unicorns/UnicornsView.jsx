@@ -1,127 +1,168 @@
-import React, { useEffect, useState } from "react";
+import React from 'react';
+import { InputText } from 'primereact/inputtext';
+import { Button } from 'primereact/button';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import 'primereact/resources/themes/lara-dark-indigo/theme.css'; // Tema oscuro
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 const UnicornsView = ({
   unicorns,
-  onCreate,
-  onUpdate,
-  onDelete,
-  selectedUnicorn,
-  openEditDialog,
-  isDialogOpen,
-  closeDialog,
+  formData,
+  setFormData,
+  handleCreate,
+  handleUpdate,
+  handleDelete,
+  editingUnicorn,
+  startEdit,
 }) => {
-  const [form, setForm] = useState({ name: "", color: "", age: "", poder: ""});
-
-  useEffect(() => {
-    if (selectedUnicorn) {
-      setForm(selectedUnicorn);
-    } else {
-      setForm({ name: "", color: "", age: "", poder: ""});
-    }
-  }, [selectedUnicorn]);
-
-  const handleInputChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (form.id) {
-      onUpdate(form);
-    } else {
-      onCreate(form);
-    }
-    closeDialog();
-  };
+  const actionBodyTemplate = (rowData) => (
+    <div className="flex gap-2">
+      <Button
+        label="Editar"
+        icon="pi pi-pencil"
+        onClick={() => startEdit(rowData)}
+        style={{
+          backgroundColor: '#f0ad4e',
+          border: 'none',
+          color: '#000',
+        }}
+      />
+      <Button
+        label="Eliminar"
+        icon="pi pi-trash"
+        onClick={() => handleDelete(rowData._id)}
+        style={{
+          backgroundColor: '#d9534f',
+          border: 'none',
+          color: '#fff',
+        }}
+      />
+    </div>
+  );
 
   return (
-    <div style={{ padding: "1rem" }}>
-      <h1>🦄 Lista de Unicornios</h1>
+    <div
+      className="p-6"
+      style={{ backgroundColor: '#121212', minHeight: '100vh', color: '#ffffff' }}
+    >
+      <h2 className="text-2xl mb-8">🌌 Gestión de Unicornios</h2>
 
-      <button onClick={() => openEditDialog(null)}>Crear Unicornio</button>
-
-      <table border="1" cellPadding="8" style={{ marginTop: "1rem", width: "100%" }}>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Color</th>
-            <th>Edad</th>
-            <th>Poder</th>
-          </tr>
-        </thead>
-        <tbody>
-          {unicorns.map((u) => (
-            <tr key={u.id}>
-              <td>{u.name}</td>
-              <td>{u.color}</td>
-              <td>{u.age}</td>
-              <td>{u.poder}</td>
-              <td>
-                <button onClick={() => openEditDialog(u)}>Editar</button>
-                <button onClick={() => onDelete(u.id)}>Eliminar</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {isDialogOpen && (
-        <div style={{ marginTop: "2rem", border: "1px solid gray", padding: "1rem" }}>
-          <h2>{form.id ? "Editar Unicornio" : "Nuevo Unicornio"}</h2>
-          <form onSubmit={handleSubmit}>
-            <div>
-              <label htmlFor="name">Nombre: </label>
-              <input
-                type="text"
-                name="name"
+      {/* Formulario */}
+      <div
+        className="formulario-container"
+        style={{
+          backgroundColor: '#1e1e1e',
+          padding: '2rem',
+          borderRadius: '12px',
+          maxWidth: '700px',
+          marginBottom: '3rem',
+        }}
+      >
+        <div
+          className="form-grid"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: '1.5rem',
+          }}
+        >
+          <div>
+            <span className="p-float-label w-full">
+              <InputText
                 id="name"
-                value={form.name}
-                onChange={handleInputChange}
-                required
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full"
               />
-            </div>
-            <div>
-              <label htmlFor="color">Color: </label>
-              <input
-                type="text"
-                name="color"
-                id="color"
-                value={form.color}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="age">Edad: </label>
-              <input
-                type="number"
-                name="age"
-                id="age"
-                value={form.age}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="power">Poder: </label>
-              <input
-                type="text"
-                name="power"
-                id="power"
-                value={form.power}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
+              <label htmlFor="name">Nombre</label>
+            </span>
+          </div>
 
-            <br />
-            <button type="submit">Guardar</button>
-            <button type="button" onClick={closeDialog}>
-              Cancelar
-            </button>
-          </form>
+          <div>
+            <span className="p-float-label w-full">
+              <InputText
+                id="age"
+                name="age"
+                type="number"
+                value={formData.age}
+                onChange={handleChange}
+                className="w-full"
+              />
+              <label htmlFor="age">Edad</label>
+            </span>
+          </div>
+
+          <div>
+            <span className="p-float-label w-full">
+              <InputText
+                id="colour"
+                name="colour"
+                value={formData.colour}
+                onChange={handleChange}
+                className="w-full"
+              />
+              <label htmlFor="colour">Color</label>
+            </span>
+          </div>
+
+          <div>
+            <span className="p-float-label w-full">
+              <InputText
+                id="power"
+                name="power"
+                value={formData.power}
+                onChange={handleChange}
+                className="w-full"
+              />
+              <label htmlFor="power">Poder</label>
+            </span>
+          </div>
         </div>
-      )}
+
+        <div className="mt-6">
+          <Button
+            label={editingUnicorn ? "Actualizar Unicornio" : "Crear Unicornio"}
+            icon={editingUnicorn ? "pi pi-save" : "pi pi-plus"}
+            onClick={editingUnicorn ? handleUpdate : handleCreate}
+            disabled={!formData.name || !formData.age || !formData.colour || !formData.power}
+            style={{
+              backgroundColor: '#00bcd4',
+              border: 'none',
+              color: '#000',
+              fontWeight: 'bold',
+              width: '100%',
+              padding: '0.75rem',
+              marginTop: '2rem',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Tabla */}
+      <div style={{ marginTop: '2rem' }}>
+        <DataTable
+          value={unicorns}
+          tableStyle={{ minWidth: '50rem' }}
+          className="p-datatable-sm"
+        >
+          <Column field="name" header="Nombre" style={{ color: '#fff' }}></Column>
+          <Column field="age" header="Edad"></Column>
+          <Column field="colour" header="Color"></Column>
+          <Column field="power" header="Poder"></Column>
+          <Column
+            body={actionBodyTemplate}
+            header="Acciones"
+            style={{ width: '12rem' }}
+          ></Column>
+        </DataTable>
+      </div>
     </div>
   );
 };
