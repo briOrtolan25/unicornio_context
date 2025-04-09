@@ -9,7 +9,7 @@ const UnicornsContainer = () => {
     name: '',
     age: '',
     colour: '',
-    power: '', // 🆕 Agregado el campo poder
+    power: '', 
   });
   const [editingUnicorn, setEditingUnicorn] = useState(null);
 
