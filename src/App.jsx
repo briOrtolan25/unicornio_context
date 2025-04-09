@@ -1,16 +1,15 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import UnicornsModule from './unicorns';
 
-const App = () => {
+function App() {
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4"> Bienvenido</h1>
-      <Link to="/unicornios" className="p-button p-button-primary">
-        Ir a la gestión de Unicornios
-      </Link>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/unicornios" element={<UnicornsModule />} />
+        {/* Otras rutas que ya tengas */}
+      </Routes>
+    </Router>
   );
-};
+}
 
 export default App;
-
