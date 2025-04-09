@@ -51,7 +51,7 @@ const UnicornsView = ({
       className="p-6"
       style={{ backgroundColor: '#121212', minHeight: '100vh', color: '#ffffff' }}
     >
-      <h2 className="text-2xl mb-8">🌌 Gestión de Unicornios</h2>
+      <h2 className="text-2xl mb-8"> 🦄 Gestión de Unicornios</h2>
 
       {/* Formulario */}
       <div
